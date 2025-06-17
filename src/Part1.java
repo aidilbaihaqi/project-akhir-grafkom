@@ -5,9 +5,9 @@ import java.util.Set;
 import javax.swing.*;
 
 // Class representasi titik 3D
-class Vertex3 {
+class Vertex {
     double x, y, z;
-    Vertex3(double x, double y, double z) { this.x = x; this.y = y; this.z = z; }
+    Vertex(double x, double y, double z) { this.x = x; this.y = y; this.z = z; }
 }
 
 // Class matriks 3x3 untuk transformasi
@@ -16,11 +16,11 @@ class Matrix3 {
     Matrix3(double[][] m) { this.m = m; }
 
     // Transformasi matriks ke vertex
-    Vertex3 transform(Vertex3 v) {
+    Vertex transform(Vertex v) {
         double nx = m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z;
         double ny = m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z;
         double nz = m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z;
-        return new Vertex3(nx, ny, nz);
+        return new Vertex(nx, ny, nz);
     }
 
     // Gabungkan dua matriks: this * other
@@ -38,17 +38,17 @@ class Matrix3 {
     }
 }
 
-public class BalokWireframeSmooth extends JPanel implements KeyListener {
-    private final Vertex3[] points;         // Titik 3D
+public class Part1 extends JPanel implements KeyListener {
+    private final Vertex[] points;         // Titik 3D
     private final int[][] faces;            // Definisi faces
     private double angleX = 0, angleY = 0;
 
-    public BalokWireframeSmooth() {
-        points = new Vertex3[] {
-            new Vertex3(-2, -1, -0.75), new Vertex3( 2, -1, -0.75),
-            new Vertex3( 2,  1, -0.75), new Vertex3(-2,  1, -0.75),
-            new Vertex3(-2, -1,  0.75), new Vertex3( 2, -1,  0.75),
-            new Vertex3( 2,  1,  0.75), new Vertex3(-2,  1,  0.75)
+    public Part1() {
+        points = new Vertex[] {
+            new Vertex(-2, -1, -0.75), new Vertex( 2, -1, -0.75),
+            new Vertex( 2,  1, -0.75), new Vertex(-2,  1, -0.75),
+            new Vertex(-2, -1,  0.75), new Vertex( 2, -1,  0.75),
+            new Vertex( 2,  1,  0.75), new Vertex(-2,  1,  0.75)
         };
         faces = new int[][] {
             {0,1,2,3}, {4,5,6,7},
@@ -89,7 +89,7 @@ public class BalokWireframeSmooth extends JPanel implements KeyListener {
         Matrix3 transform = rotY.multiply(rotX);  // Transformasi gabungan
 
         // Terapkan transformasi ke semua titik
-        Vertex3[] r = new Vertex3[points.length];
+        Vertex[] r = new Vertex[points.length];
         for (int i = 0; i < points.length; i++) {
             r[i] = transform.transform(points[i]);
         }
@@ -138,7 +138,7 @@ public class BalokWireframeSmooth extends JPanel implements KeyListener {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Balok Wireframe Smooth with Matrix");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(new BalokWireframeSmooth());
+            frame.setContentPane(new Part1());
             frame.pack(); frame.setLocationRelativeTo(null); frame.setVisible(true);
         });
     }
