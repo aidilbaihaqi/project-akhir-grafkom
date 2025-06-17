@@ -4,100 +4,125 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.*;
 
-// ini class utama
-public class Part1 extends JPanel implements KeyListener {
-    private final double[][] points;
-    private final int[][] faces;
+// Class representasi titik 3D
+class Vertex3 {
+    double x, y, z;
+    Vertex3(double x, double y, double z) { this.x = x; this.y = y; this.z = z; }
+}
+
+// Class matriks 3x3 untuk transformasi
+class Matrix3 {
+    double[][] m;
+    Matrix3(double[][] m) { this.m = m; }
+
+    // Transformasi matriks ke vertex
+    Vertex3 transform(Vertex3 v) {
+        double nx = m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z;
+        double ny = m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z;
+        double nz = m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z;
+        return new Vertex3(nx, ny, nz);
+    }
+
+    // Gabungkan dua matriks: this * other
+    Matrix3 multiply(Matrix3 other) {
+        double[][] r = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                r[i][j] = 0;
+                for (int k = 0; k < 3; k++) {
+                    r[i][j] += this.m[i][k]*other.m[k][j];
+                }
+            }
+        }
+        return new Matrix3(r);
+    }
+}
+
+public class BalokWireframeSmooth extends JPanel implements KeyListener {
+    private final Vertex3[] points;         // Titik 3D
+    private final int[][] faces;            // Definisi faces
     private double angleX = 0, angleY = 0;
 
-    public Part1() {
-        // 8 titik sudut balok
-        points = new double[][] {
-            {-2, -1, -0.75}, { 2, -1, -0.75}, { 2,  1, -0.75}, {-2,  1, -0.75},
-            {-2, -1,  0.75}, { 2, -1,  0.75}, { 2,  1,  0.75}, {-2,  1,  0.75}
+    public BalokWireframeSmooth() {
+        points = new Vertex3[] {
+            new Vertex3(-2, -1, -0.75), new Vertex3( 2, -1, -0.75),
+            new Vertex3( 2,  1, -0.75), new Vertex3(-2,  1, -0.75),
+            new Vertex3(-2, -1,  0.75), new Vertex3( 2, -1,  0.75),
+            new Vertex3( 2,  1,  0.75), new Vertex3(-2,  1,  0.75)
         };
-        // Faces untuk kumpulkan edges
         faces = new int[][] {
             {0,1,2,3}, {4,5,6,7},
             {0,1,5,4}, {3,2,6,7},
             {1,2,6,5}, {0,3,7,4}
         };
-
-        setPreferredSize(new Dimension(600, 600));
+        setPreferredSize(new Dimension(600,600));
         setBackground(Color.WHITE);
         setFocusable(true);
         addKeyListener(this);
-
-        // javax.swing.Timer untuk repaint ~60FPS
         new javax.swing.Timer(16, e -> repaint()).start();
     }
 
-    @Override
-    public void addNotify() {
+    @Override public void addNotify() {
         super.addNotify();
         requestFocusInWindow();
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
+    @Override protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
-        // Nyalakan anti-aliasing untuk garis mulus
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING,    RenderingHints.VALUE_RENDER_QUALITY);
 
-        int cx = getWidth()/2, cy = getHeight()/2;
-        int scale = 100;  // Kembali ke skala awal supaya ukuran "kamera" sama
+        int cx = getWidth()/2, cy = getHeight()/2, scale = 100;
 
-        // 1) Rotasi titik
-        double[][] r = new double[points.length][3];
+        // Buat matriks rotasi X dan Y
+        Matrix3 rotX = new Matrix3(new double[][] {
+            {1, 0, 0},
+            {0, Math.cos(angleX), -Math.sin(angleX)},
+            {0, Math.sin(angleX),  Math.cos(angleX)}
+        });
+        Matrix3 rotY = new Matrix3(new double[][] {
+            { Math.cos(angleY), 0, Math.sin(angleY)},
+            { 0,                1, 0               },
+            {-Math.sin(angleY), 0, Math.cos(angleY)}
+        });
+        Matrix3 transform = rotY.multiply(rotX);  // Transformasi gabungan
+
+        // Terapkan transformasi ke semua titik
+        Vertex3[] r = new Vertex3[points.length];
         for (int i = 0; i < points.length; i++) {
-            r[i] = rotateY(rotateX(points[i], angleX), angleY);
+            r[i] = transform.transform(points[i]);
         }
 
-        // 2) Kumpulkan semua edge unik
+        // Kumpulkan edges dari faces
         Set<String> edges = new HashSet<>();
         for (int[] f : faces) {
             for (int j = 0; j < f.length; j++) {
                 int a = f[j], b = f[(j+1)%f.length];
-                String key = a < b ? a + "-" + b : b + "-" + a;
+                String key = a < b ? a+"-"+b : b+"-"+a;
                 edges.add(key);
             }
         }
 
-        // 3) Proyeksi orthografis + rounding
+        // Proyeksi orthografis ke 2D
         Point[] proj = new Point[r.length];
         for (int i = 0; i < r.length; i++) {
-            int x = (int) Math.round(r[i][0] * scale) + cx;
-            int y = (int) Math.round(-r[i][1] * scale) + cy;
+            int x = (int)Math.round(r[i].x * scale) + cx;
+            int y = (int)Math.round(-r[i].y * scale) + cy;
             proj[i] = new Point(x, y);
         }
 
-        // 4) Gambar wireframe
+        // Gambar wireframe
         g2.setStroke(new BasicStroke(2f));
         g2.setColor(Color.MAGENTA.darker());
         for (String key : edges) {
-            String[] parts = key.split("-");
-            int u = Integer.parseInt(parts[0]);
-            int v = Integer.parseInt(parts[1]);
-            Point p1 = proj[u], p2 = proj[v];
+            String[] p = key.split("-");
+            Point p1 = proj[Integer.parseInt(p[0])], p2 = proj[Integer.parseInt(p[1])];
             g2.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
 
-    private double[] rotateX(double[] p, double a) {
-        double c = Math.cos(a), s = Math.sin(a);
-        return new double[]{ p[0], p[1]*c - p[2]*s, p[1]*s + p[2]*c };
-    }
-
-    private double[] rotateY(double[] p, double a) {
-        double c = Math.cos(a), s = Math.sin(a);
-        return new double[]{ p[0]*c + p[2]*s, p[1], -p[0]*s + p[2]*c };
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
+    @Override public void keyPressed(KeyEvent e) {
         double sp = 0.1;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W -> angleX += sp;
@@ -111,12 +136,10 @@ public class Part1 extends JPanel implements KeyListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Balok Wireframe Smooth");
+            JFrame frame = new JFrame("Balok Wireframe Smooth with Matrix");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(new Part1());
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            frame.setContentPane(new BalokWireframeSmooth());
+            frame.pack(); frame.setLocationRelativeTo(null); frame.setVisible(true);
         });
     }
 }
