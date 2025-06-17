@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.*;
 
+// ini class utama
 public class BalokWireframeSmooth extends JPanel implements KeyListener {
     private final double[][] points;
     private final int[][] faces;
