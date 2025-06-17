@@ -5,12 +5,12 @@ import java.util.Set;
 import javax.swing.*;
 
 // ini class utama
-public class BalokWireframeSmooth extends JPanel implements KeyListener {
+public class Part1 extends JPanel implements KeyListener {
     private final double[][] points;
     private final int[][] faces;
     private double angleX = 0, angleY = 0;
 
-    public BalokWireframeSmooth() {
+    public Part1() {
         // 8 titik sudut balok
         points = new double[][] {
             {-2, -1, -0.75}, { 2, -1, -0.75}, { 2,  1, -0.75}, {-2,  1, -0.75},
@@ -113,7 +113,7 @@ public class BalokWireframeSmooth extends JPanel implements KeyListener {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Balok Wireframe Smooth");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(new BalokWireframeSmooth());
+            frame.setContentPane(new Part1());
             frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);

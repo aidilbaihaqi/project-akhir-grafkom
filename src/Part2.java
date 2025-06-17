@@ -39,13 +39,13 @@ class Matrix3 {
     }
 }
 
-public class BalokKerangka extends JPanel implements KeyListener {
+public class Part2 extends JPanel implements KeyListener {
     // === Array Vertex (titik 3D) ===
     private final Vertex[] points;  // <-- Inilah 'vertex' utama
     private final int[][] faces;
     private double angleX = 0, angleY = 0;
 
-    public BalokKerangka() {
+    public Part2() {
         // Inisialisasi 8 titik sudut balok sebagai Vertex
         points = new Vertex[] {
             new Vertex(-2, -1, -0.75),  // sudut 0
@@ -145,7 +145,7 @@ public class BalokKerangka extends JPanel implements KeyListener {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Kerangka Balok with Matrix");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setContentPane(new BalokKerangka());
+            frame.setContentPane(new Part2());
             frame.pack(); frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });
