@@ -12,9 +12,9 @@ class Vertex {
 }
 
 // === Definisi Matriks 3×3 ===
-class Matrix3 {
+class Matrix {
     double[][] m;
-    Matrix3(double[][] m) { this.m = m; }
+    Matrix(double[][] m) { this.m = m; }
 
     // transform(Vertex v): transformasi matriks ke vertex
     Vertex transform(Vertex v) {
@@ -25,7 +25,7 @@ class Matrix3 {
     }
 
     // multiply: menggabungkan 2 matriks menjadi satu (this * other)
-    Matrix3 multiply(Matrix3 other) {
+    Matrix multiply(Matrix other) {
         double[][] r = new double[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -35,7 +35,7 @@ class Matrix3 {
                 }
             }
         }
-        return new Matrix3(r);
+        return new Matrix(r);
     }
 }
 
@@ -76,24 +76,24 @@ public class Part2 extends JPanel implements KeyListener {
 
         // === Transformasi Matriks ===
         // 1) Matriks rotasi sumbu X
-        Matrix3 rotX = new Matrix3(new double[][] {
+        Matrix rotX = new Matrix(new double[][] {
             {1, 0, 0},
             {0, Math.cos(angleX), -Math.sin(angleX)},
             {0, Math.sin(angleX),  Math.cos(angleX)}
         });
         // 2) Matriks rotasi sumbu Y
-        Matrix3 rotY = new Matrix3(new double[][] {
+        Matrix rotY = new Matrix(new double[][] {
             { Math.cos(angleY), 0, Math.sin(angleY)},
             { 0,                1, 0               },
             {-Math.sin(angleY), 0, Math.cos(angleY)}
         });
         // 3) Gabungkan: transform = rotY * rotX
-        Matrix3 transform = rotY.multiply(rotX);  // <-- Inilah 'transformasi matrix'
+        Matrix transform = rotY.multiply(rotX);  // <-- Inilah 'transformasi matrix'
 
         // 4) Terapkan transformasi ke tiap vertex
         Vertex[] r = new Vertex[points.length];
         for (int i = 0; i < points.length; i++) {
-            r[i] = transform.transform(points[i]);  // <-- Transformasi via Matrix3.transform()
+            r[i] = transform.transform(points[i]);  // <-- Transformasi via Matrix.transform()
         }
 
         // ... (lanjut perhitungan back-face culling dan proyeksi)
