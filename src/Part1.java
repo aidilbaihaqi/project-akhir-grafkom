@@ -11,9 +11,9 @@ class Vertex {
 }
 
 // Class matriks 3x3 untuk transformasi
-class Matrix3 {
+class Matrix {
     double[][] m;
-    Matrix3(double[][] m) { this.m = m; }
+    Matrix(double[][] m) { this.m = m; }
 
     // Transformasi matriks ke vertex
     Vertex transform(Vertex v) {
@@ -24,7 +24,7 @@ class Matrix3 {
     }
 
     // Gabungkan dua matriks: this * other
-    Matrix3 multiply(Matrix3 other) {
+    Matrix multiply(Matrix other) {
         double[][] r = new double[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -34,7 +34,7 @@ class Matrix3 {
                 }
             }
         }
-        return new Matrix3(r);
+        return new Matrix(r);
     }
 }
 
@@ -76,17 +76,17 @@ public class Part1 extends JPanel implements KeyListener {
         int cx = getWidth()/2, cy = getHeight()/2, scale = 100;
 
         // Buat matriks rotasi X dan Y
-        Matrix3 rotX = new Matrix3(new double[][] {
+        Matrix rotX = new Matrix(new double[][] {
             {1, 0, 0},
             {0, Math.cos(angleX), -Math.sin(angleX)},
             {0, Math.sin(angleX),  Math.cos(angleX)}
         });
-        Matrix3 rotY = new Matrix3(new double[][] {
+        Matrix rotY = new Matrix(new double[][] {
             { Math.cos(angleY), 0, Math.sin(angleY)},
             { 0,                1, 0               },
             {-Math.sin(angleY), 0, Math.cos(angleY)}
         });
-        Matrix3 transform = rotY.multiply(rotX);  // Transformasi gabungan
+        Matrix transform = rotY.multiply(rotX);  // Transformasi gabungan
 
         // Terapkan transformasi ke semua titik
         Vertex[] r = new Vertex[points.length];
