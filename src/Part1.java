@@ -136,7 +136,7 @@ public class Part1 extends JPanel implements KeyListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Balok Wireframe Smooth with Matrix");
+            JFrame frame = new JFrame("Balok Wireframe");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(new Part1());
             frame.pack(); frame.setLocationRelativeTo(null); frame.setVisible(true);

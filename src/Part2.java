@@ -143,7 +143,7 @@ public class Part2 extends JPanel implements KeyListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Kerangka Balok with Matrix");
+            JFrame frame = new JFrame("Balok Wireframe dengan daerah yang tertutupi atau terhalang tidak akan muncul");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(new Part2());
             frame.pack(); frame.setLocationRelativeTo(null);
