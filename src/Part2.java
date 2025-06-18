@@ -132,10 +132,10 @@ public class Part2 extends JPanel implements KeyListener {
 
     @Override public void keyPressed(KeyEvent e) { double speed = 0.1;
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W -> angleX += speed;
-            case KeyEvent.VK_S -> angleX -= speed;
-            case KeyEvent.VK_A -> angleY += speed;
-            case KeyEvent.VK_D -> angleY -= speed;
+            case KeyEvent.VK_W -> angleX -= speed;
+            case KeyEvent.VK_S -> angleX += speed;
+            case KeyEvent.VK_A -> angleY -= speed;
+            case KeyEvent.VK_D -> angleY += speed;
         }
     }
     @Override public void keyReleased(KeyEvent e) {}

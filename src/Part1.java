@@ -125,10 +125,10 @@ public class Part1 extends JPanel implements KeyListener {
     @Override public void keyPressed(KeyEvent e) {
         double sp = 0.1;
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W -> angleX += sp;
-            case KeyEvent.VK_S -> angleX -= sp;
-            case KeyEvent.VK_A -> angleY += sp;
-            case KeyEvent.VK_D -> angleY -= sp;
+            case KeyEvent.VK_W -> angleX -= sp;
+            case KeyEvent.VK_S -> angleX += sp;
+            case KeyEvent.VK_A -> angleY -= sp;
+            case KeyEvent.VK_D -> angleY += sp;
         }
     }
     @Override public void keyReleased(KeyEvent e) {}
